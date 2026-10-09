@@ -1,4 +1,3 @@
-import { Languages, LayoutDashboard } from "lucide-react";
 import type { Screen } from "../lib/types";
 
 interface Props {
@@ -10,10 +9,10 @@ export default function Navbar({ screen, onLogo }: Props) {
   return (
     <header
       style={{
-        background: "rgba(255, 255, 255, 0.85)",
+        background: "rgba(251, 243, 225, 0.88)",
         backdropFilter: "blur(12px)",
-        borderBottom: "1px solid var(--neutral-200)",
-        padding: "16px 0",
+        borderBottom: "1px solid var(--border)",
+        padding: "20px 0",
         position: "sticky",
         top: 0,
         zIndex: 100,
@@ -21,7 +20,7 @@ export default function Navbar({ screen, onLogo }: Props) {
     >
       <div
         style={{
-          maxWidth: 1200,
+          maxWidth: 1100,
           margin: "0 auto",
           padding: "0 24px",
           display: "flex",
@@ -34,28 +33,35 @@ export default function Navbar({ screen, onLogo }: Props) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 10,
+            gap: 8,
             background: "none",
             border: "none",
             cursor: "pointer",
           }}
         >
-          <div
+          <span
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              background: "linear-gradient(135deg, var(--primary-600), var(--primary-800))",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "var(--shadow-md)",
+              fontFamily: "var(--serif)",
+              fontSize: 22,
+              fontWeight: 600,
+              color: "var(--primary)",
+              letterSpacing: "-0.01em",
             }}
           >
-            <Languages size={20} color="white" />
-          </div>
-          <span style={{ fontSize: 20, fontWeight: 700, color: "var(--neutral-900)" }}>
-            Lexicon<span style={{ color: "var(--primary-600)" }}>Recall</span>
+            Lexicon
+          </span>
+          <span
+            style={{
+              fontFamily: "var(--sans)",
+              fontSize: 11,
+              fontWeight: 600,
+              color: "var(--accent)",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              paddingBottom: 2,
+            }}
+          >
+            Recall
           </span>
         </button>
 
@@ -63,26 +69,27 @@ export default function Navbar({ screen, onLogo }: Props) {
           <button
             onClick={onLogo}
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              color: "var(--neutral-500)",
-              fontSize: 14,
+              fontFamily: "var(--sans)",
+              fontSize: 13,
               fontWeight: 500,
-              padding: "8px 16px",
-              borderRadius: 8,
-              transition: "all 0.2s",
+              color: "var(--muted-foreground)",
+              padding: "8px 20px",
+              borderRadius: 100,
+              border: "1px solid var(--border)",
+              transition: "all 0.25s ease",
+              letterSpacing: "0.02em",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "var(--primary-600)";
-              e.currentTarget.style.background = "var(--primary-50)";
+              e.currentTarget.style.color = "var(--primary)";
+              e.currentTarget.style.borderColor = "var(--border-strong)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.5)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "var(--neutral-500)";
+              e.currentTarget.style.color = "var(--muted-foreground)";
+              e.currentTarget.style.borderColor = "var(--border)";
               e.currentTarget.style.background = "none";
             }}
           >
-            <LayoutDashboard size={16} />
             All Languages
           </button>
         )}

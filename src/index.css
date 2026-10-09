@@ -1,60 +1,45 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap");
 
 :root {
-  --primary-50: #eef5ff;
-  --primary-100: #d9e8ff;
-  --primary-200: #bcd7ff;
-  --primary-300: #8ec0ff;
-  --primary-400: #599fff;
-  --primary-500: #3380ff;
-  --primary-600: #1a61f5;
-  --primary-700: #154ce0;
-  --primary-800: #1740b5;
-  --primary-900: #1a3a8e;
+  /* Warm cream palette - matching original Lexicon site */
+  --cream: #f5e6c8;
+  --cream-soft: #fbf3e1;
+  --cream-deep: #e8d5a8;
 
-  --accent-50: #ecfdf5;
-  --accent-100: #d1fae5;
-  --accent-200: #a7f3d0;
-  --accent-300: #6ee7b7;
-  --accent-400: #34d399;
-  --accent-500: #10b981;
-  --accent-600: #059669;
-  --accent-700: #047857;
+  /* Deep navy primary */
+  --primary: #0a1a3f;
+  --primary-soft: #14265c;
+  --primary-light: #2a4a8a;
 
-  --warning-50: #fffbeb;
-  --warning-100: #fef3c7;
-  --warning-400: #fbbf24;
-  --warning-500: #f59e0b;
-  --warning-600: #d97706;
+  --foreground: #0a1520;
+  --muted-foreground: #4a5a72;
 
-  --error-50: #fef2f2;
-  --error-100: #fee2e2;
-  --error-400: #f87171;
-  --error-500: #ef4444;
-  --error-600: #dc2626;
+  --background: #fbf3e1;
+  --card: #fdf8ee;
+  --border: rgba(10, 26, 63, 0.12);
+  --border-strong: rgba(10, 26, 63, 0.2);
+  --input: rgba(10, 26, 63, 0.18);
 
-  --neutral-0: #ffffff;
-  --neutral-50: #f8fafc;
-  --neutral-100: #f1f5f9;
-  --neutral-200: #e2e8f0;
-  --neutral-300: #cbd5e1;
-  --neutral-400: #94a3b8;
-  --neutral-500: #64748b;
-  --neutral-600: #475569;
-  --neutral-700: #334155;
-  --neutral-800: #1e293b;
-  --neutral-900: #0f172a;
-  --neutral-950: #020617;
+  --accent: #c9a84c;
+  --accent-light: #e0c878;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --success: #2d7a4f;
+  --warning: #c97817;
+  --destructive: #b91c1c;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  --shadow-sm: 0 1px 2px rgba(10, 26, 63, 0.06);
+  --shadow-md: 0 4px 12px -2px rgba(10, 26, 63, 0.08), 0 2px 6px -2px rgba(10, 26, 63, 0.06);
+  --shadow-lg: 0 12px 28px -6px rgba(10, 26, 63, 0.1), 0 6px 12px -6px rgba(10, 26, 63, 0.08);
+  --shadow-xl: 0 24px 48px -12px rgba(10, 26, 63, 0.14), 0 12px 24px -12px rgba(10, 26, 63, 0.08);
+
+  --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 * {
@@ -64,9 +49,9 @@
 }
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--neutral-50);
-  color: var(--neutral-800);
+  font-family: var(--sans);
+  background: var(--background);
+  color: var(--foreground);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -104,17 +89,17 @@ button {
   50% { transform: scale(1.02); }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+@keyframes subtleGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 .fade-in {
-  animation: fadeIn 0.4s ease-out both;
+  animation: fadeIn 0.5s ease-out both;
 }
 
 .slide-up {
-  animation: slideUp 0.5s ease-out both;
+  animation: slideUp 0.6s ease-out both;
 }
 
 .flip-card {
@@ -123,4 +108,25 @@ button {
 
 .pulse {
   animation: pulse 2s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream-soft);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cream-deep);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: var(--cream-soft);
 }

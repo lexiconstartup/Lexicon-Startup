@@ -11,10 +11,10 @@ interface Props {
 }
 
 const RATING_CONFIG: { value: Rating; label: string; color: string; bg: string; icon: typeof ThumbsUp }[] = [
-  { value: "again", label: "Again", color: "var(--error-600)", bg: "var(--error-50)", icon: XCircle },
-  { value: "hard", label: "Hard", color: "var(--warning-600)", bg: "var(--warning-50)", icon: ThumbsDown },
-  { value: "good", label: "Good", color: "var(--primary-600)", bg: "var(--primary-50)", icon: ThumbsUp },
-  { value: "easy", label: "Easy", color: "var(--accent-600)", bg: "var(--accent-50)", icon: CheckCircle2 },
+  { value: "again", label: "Again", color: "var(--destructive)", bg: "rgba(185, 28, 28, 0.06)", icon: XCircle },
+  { value: "hard", label: "Hard", color: "var(--warning)", bg: "rgba(201, 120, 23, 0.08)", icon: ThumbsDown },
+  { value: "good", label: "Good", color: "var(--primary)", bg: "rgba(10, 26, 63, 0.06)", icon: ThumbsUp },
+  { value: "easy", label: "Easy", color: "var(--success)", bg: "rgba(45, 122, 79, 0.08)", icon: CheckCircle2 },
 ];
 
 export default function StudyScreen({ language, onExit }: Props) {
@@ -32,7 +32,6 @@ export default function StudyScreen({ language, onExit }: Props) {
     setLoading(true);
     const today = new Date().toISOString().split("T")[0];
 
-    // Get cards due for review + new cards
     const { data: dueProgress } = await supabase
       .from("card_progress")
       .select(`
@@ -64,7 +63,6 @@ export default function StudyScreen({ language, onExit }: Props) {
 
     const dueIds = dueCards.map((c) => c.id);
 
-    // Get new cards (no progress record yet)
     const { data: newCardsData } = await supabase
       .from("flashcards")
       .select("*")
@@ -75,9 +73,7 @@ export default function StudyScreen({ language, onExit }: Props) {
       (c) => !dueIds.includes(c.id)
     );
 
-    // Prioritize due cards, then add new cards (max 20 total)
     const allCards = [...dueCards, ...newCards].slice(0, 20);
-
     setCards(allCards);
     setLoading(false);
   }, [language]);
@@ -116,13 +112,8 @@ export default function StudyScreen({ language, onExit }: Props) {
 
     const result = calculateNextReview(currentState, rating);
 
-    // Log the review
-    await supabase.from("review_logs").insert({
-      flashcard_id: currentCard.id,
-      rating,
-    });
+    await supabase.from("review_logs").insert({ flashcard_id: currentCard.id, rating });
 
-    // Upsert card progress
     if (currentCard.progress) {
       await supabase
         .from("card_progress")
@@ -163,7 +154,7 @@ export default function StudyScreen({ language, onExit }: Props) {
   if (loading) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: 400 }}>
-        <RotateCw size={32} className="pulse" color="var(--primary-500)" />
+        <RotateCw size={28} className="pulse" color="var(--primary)" />
       </div>
     );
   }
@@ -173,28 +164,36 @@ export default function StudyScreen({ language, onExit }: Props) {
       ? Math.round((sessionStats.correct / sessionStats.reviewed) * 100)
       : 0;
     return (
-      <div className="fade-in" style={{ maxWidth: 480, margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
+      <div className="fade-in" style={{ maxWidth: 460, margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
         <div
           style={{
-            width: 80,
-            height: 80,
+            width: 72,
+            height: 72,
             borderRadius: "50%",
-            background: "var(--accent-100)",
+            background: "var(--cream)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             margin: "0 auto 24px",
           }}
         >
-          <CheckCircle2 size={40} color="var(--accent-600)" />
+          <CheckCircle2 size={36} color="var(--success)" strokeWidth={1.5} />
         </div>
-        <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--neutral-900)", marginBottom: 8 }}>
-          Session Complete!
+        <h2
+          style={{
+            fontFamily: "var(--serif)",
+            fontSize: 30,
+            fontWeight: 500,
+            color: "var(--primary)",
+            marginBottom: 10,
+          }}
+        >
+          Session Complete
         </h2>
-        <p style={{ color: "var(--neutral-500)", marginBottom: 32 }}>
+        <p style={{ fontFamily: "var(--sans)", fontSize: 15, color: "var(--muted-foreground)", marginBottom: 36 }}>
           Great work studying {langInfo.label}. Here's your session summary:
         </p>
-        <div style={{ display: "flex", gap: 16, justifyContent: "center", marginBottom: 32 }}>
+        <div style={{ display: "flex", gap: 24, justifyContent: "center", marginBottom: 36 }}>
           <StatBox label="Reviewed" value={sessionStats.reviewed} />
           <StatBox label="Correct" value={sessionStats.correct} />
           <StatBox label="Accuracy" value={`${accuracy}%`} />
@@ -202,17 +201,19 @@ export default function StudyScreen({ language, onExit }: Props) {
         <button
           onClick={onExit}
           style={{
-            padding: "12px 32px",
-            borderRadius: 10,
-            background: "var(--primary-600)",
-            color: "white",
-            fontSize: 15,
+            padding: "14px 36px",
+            borderRadius: 100,
+            background: "var(--primary)",
+            color: "var(--cream-soft)",
+            fontFamily: "var(--sans)",
+            fontSize: 14,
             fontWeight: 600,
+            letterSpacing: "0.02em",
             boxShadow: "var(--shadow-md)",
-            transition: "all 0.2s",
+            transition: "all 0.25s ease",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--primary-700)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--primary-600)")}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--primary-soft)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--primary)")}
         >
           Back to Dashboard
         </button>
@@ -222,21 +223,30 @@ export default function StudyScreen({ language, onExit }: Props) {
 
   if (cards.length === 0) {
     return (
-      <div className="fade-in" style={{ maxWidth: 480, margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700, color: "var(--neutral-900)", marginBottom: 12 }}>
+      <div className="fade-in" style={{ maxWidth: 460, margin: "80px auto", textAlign: "center", padding: "0 24px" }}>
+        <h2
+          style={{
+            fontFamily: "var(--serif)",
+            fontSize: 26,
+            fontWeight: 500,
+            color: "var(--primary)",
+            marginBottom: 12,
+          }}
+        >
           No cards due right now
         </h2>
-        <p style={{ color: "var(--neutral-500)", marginBottom: 32 }}>
-          You're all caught up! Come back later for your next review session.
+        <p style={{ fontFamily: "var(--sans)", fontSize: 15, color: "var(--muted-foreground)", marginBottom: 32 }}>
+          You're all caught up. Come back later for your next review session.
         </p>
         <button
           onClick={onExit}
           style={{
-            padding: "12px 32px",
-            borderRadius: 10,
-            background: "var(--primary-600)",
-            color: "white",
-            fontSize: 15,
+            padding: "14px 36px",
+            borderRadius: 100,
+            background: "var(--primary)",
+            color: "var(--cream-soft)",
+            fontFamily: "var(--sans)",
+            fontSize: 14,
             fontWeight: 600,
           }}
         >
@@ -247,40 +257,55 @@ export default function StudyScreen({ language, onExit }: Props) {
   }
 
   return (
-    <div className="fade-in" style={{ maxWidth: 720, margin: "0 auto", padding: "24px" }}>
+    <div className="fade-in" style={{ maxWidth: 660, margin: "0 auto", padding: "24px" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
         <button
           onClick={onExit}
           style={{
             display: "flex",
             alignItems: "center",
             gap: 6,
-            color: "var(--neutral-500)",
-            fontSize: 14,
+            color: "var(--muted-foreground)",
+            fontFamily: "var(--sans)",
+            fontSize: 13,
             fontWeight: 500,
-            padding: "8px 12px",
-            borderRadius: 8,
-            transition: "all 0.2s",
+            padding: "8px 16px",
+            borderRadius: 100,
+            border: "1px solid var(--border)",
+            transition: "all 0.25s ease",
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = "var(--primary-600)"; e.currentTarget.style.background = "var(--primary-50)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = "var(--neutral-500)"; e.currentTarget.style.background = "none"; }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--primary)";
+            e.currentTarget.style.borderColor = "var(--border-strong)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--muted-foreground)";
+            e.currentTarget.style.borderColor = "var(--border)";
+          }}
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={15} />
           Exit
         </button>
-        <div style={{ fontSize: 14, color: "var(--neutral-500)", fontWeight: 500 }}>
-          {currentIndex + 1} / {cards.length}
+        <div
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: 13,
+            color: "var(--muted-foreground)",
+            fontWeight: 500,
+          }}
+        >
+          {String(currentIndex + 1).padStart(2, "0")} / {String(cards.length).padStart(2, "0")}
         </div>
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: 4, background: "var(--neutral-200)", borderRadius: 100, marginBottom: 32, overflow: "hidden" }}>
+      <div style={{ height: 3, background: "var(--cream)", borderRadius: 100, marginBottom: 32, overflow: "hidden" }}>
         <div
           style={{
             height: "100%",
-            width: `${((currentIndex) / cards.length) * 100}%`,
-            background: "linear-gradient(90deg, var(--primary-500), var(--primary-600))",
+            width: `${(currentIndex / cards.length) * 100}%`,
+            background: "var(--primary)",
             borderRadius: 100,
             transition: "width 0.4s ease",
           }}
@@ -288,18 +313,19 @@ export default function StudyScreen({ language, onExit }: Props) {
       </div>
 
       {/* Category tag */}
-      <div style={{ textAlign: "center", marginBottom: 16 }}>
+      <div style={{ textAlign: "center", marginBottom: 20 }}>
         <span
           style={{
+            fontFamily: "var(--sans)",
             display: "inline-block",
-            padding: "4px 14px",
+            padding: "5px 16px",
             borderRadius: 100,
-            background: "var(--neutral-100)",
-            color: "var(--neutral-600)",
-            fontSize: 12,
+            background: "var(--cream)",
+            color: "var(--primary)",
+            fontSize: 11,
             fontWeight: 600,
             textTransform: "uppercase",
-            letterSpacing: "0.06em",
+            letterSpacing: "0.1em",
           }}
         >
           {currentCard.category}
@@ -308,13 +334,16 @@ export default function StudyScreen({ language, onExit }: Props) {
           <span
             style={{
               marginLeft: 8,
+              fontFamily: "var(--sans)",
               display: "inline-block",
-              padding: "4px 14px",
+              padding: "5px 16px",
               borderRadius: 100,
-              background: currentCard.progress.repetitions >= 2 ? "var(--accent-100)" : "var(--warning-100)",
-              color: currentCard.progress.repetitions >= 2 ? "var(--accent-700)" : "var(--warning-600)",
-              fontSize: 12,
+              background: currentCard.progress.repetitions >= 2 ? "rgba(45, 122, 79, 0.1)" : "rgba(201, 168, 76, 0.12)",
+              color: currentCard.progress.repetitions >= 2 ? "var(--success)" : "var(--warning)",
+              fontSize: 11,
               fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
             }}
           >
             {currentCard.progress.repetitions >= 2 ? "Learning" : "New"}
@@ -328,80 +357,158 @@ export default function StudyScreen({ language, onExit }: Props) {
         className={flipped ? "flip-card" : ""}
         onClick={() => !flipped && setFlipped(true)}
         style={{
-          background: "white",
+          background: "var(--card)",
           borderRadius: "var(--radius-xl)",
-          border: "1px solid var(--neutral-200)",
+          border: "1px solid var(--border)",
           boxShadow: "var(--shadow-lg)",
-          padding: "48px 32px",
+          padding: "48px 36px",
           minHeight: 340,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           cursor: flipped ? "default" : "pointer",
-          position: "relative",
-          transition: "all 0.3s",
+          transition: "all 0.3s ease",
         }}
       >
         {!flipped ? (
           <>
-            <div style={{ fontSize: 13, color: "var(--neutral-400)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>
+            <div
+              style={{
+                fontFamily: "var(--sans)",
+                fontSize: 12,
+                color: "var(--muted-foreground)",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: 20,
+              }}
+            >
               What is this in {langInfo.label}?
             </div>
-            <div style={{ fontSize: 36, fontWeight: 700, color: "var(--neutral-900)", textAlign: "center", marginBottom: 24 }}>
+            <div
+              style={{
+                fontFamily: "var(--serif)",
+                fontSize: 38,
+                fontWeight: 500,
+                color: "var(--primary)",
+                textAlign: "center",
+                marginBottom: 24,
+                letterSpacing: "-0.01em",
+              }}
+            >
               {currentCard.front}
             </div>
-            <div style={{ fontSize: 14, color: "var(--neutral-400)", marginTop: 16 }}>
+            <div
+              style={{
+                fontFamily: "var(--sans)",
+                fontSize: 13,
+                color: "var(--cream-deep)",
+                marginTop: 8,
+              }}
+            >
               Click to reveal answer
             </div>
           </>
         ) : (
           <>
-            <div style={{ fontSize: 13, color: "var(--primary-600)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
+            <div
+              style={{
+                fontFamily: "var(--sans)",
+                fontSize: 12,
+                color: "var(--muted-foreground)",
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                marginBottom: 10,
+              }}
+            >
               {currentCard.front}
             </div>
             <div
               style={{
-                fontSize: 40,
-                fontWeight: 700,
-                color: "var(--neutral-900)",
-                textAlign: "center",
-                marginBottom: 12,
                 fontFamily: getFontForLanguage(language),
+                fontSize: 42,
+                fontWeight: 700,
+                color: "var(--primary)",
+                textAlign: "center",
+                marginBottom: 10,
               }}
             >
               {currentCard.back}
             </div>
             {currentCard.romanization && (
-              <div style={{ fontSize: 18, color: "var(--neutral-500)", marginBottom: 16, fontStyle: "italic" }}>
+              <div
+                style={{
+                  fontFamily: "var(--serif)",
+                  fontSize: 18,
+                  color: "var(--muted-foreground)",
+                  marginBottom: 16,
+                  fontStyle: "italic",
+                }}
+              >
                 {currentCard.romanization}
               </div>
             )}
             <button
-              onClick={(e) => { e.stopPropagation(); speakWord(currentCard.back); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                speakWord(currentCard.back);
+              }}
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
-                color: "var(--primary-600)",
-                fontSize: 14,
+                color: "var(--primary)",
+                fontFamily: "var(--sans)",
+                fontSize: 13,
                 fontWeight: 500,
-                padding: "8px 16px",
-                borderRadius: 8,
-                background: "var(--primary-50)",
-                marginBottom: 20,
-                transition: "all 0.2s",
+                padding: "8px 18px",
+                borderRadius: 100,
+                background: "var(--cream)",
+                marginBottom: 24,
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--cream-deep)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "var(--cream)";
               }}
             >
-              <Volume2 size={18} />
+              <Volume2 size={16} />
               Pronounce
             </button>
             {currentCard.example && (
-              <div style={{ marginTop: 12, padding: "16px 20px", background: "var(--neutral-50)", borderRadius: 12, maxWidth: 500 }}>
-                <div style={{ fontSize: 16, color: "var(--neutral-700)", marginBottom: 6, fontFamily: getFontForLanguage(language) }}>
+              <div
+                style={{
+                  marginTop: 8,
+                  padding: "18px 22px",
+                  background: "var(--cream-soft)",
+                  borderRadius: "var(--radius)",
+                  maxWidth: 500,
+                  border: "1px solid var(--border)",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: getFontForLanguage(language),
+                    fontSize: 16,
+                    color: "var(--foreground)",
+                    marginBottom: 8,
+                    lineHeight: 1.5,
+                  }}
+                >
                   {currentCard.example}
                 </div>
-                <div style={{ fontSize: 13, color: "var(--neutral-400)", fontStyle: "italic" }}>
+                <div
+                  style={{
+                    fontFamily: "var(--serif)",
+                    fontSize: 13,
+                    color: "var(--muted-foreground)",
+                    fontStyle: "italic",
+                  }}
+                >
                   {currentCard.example_translation}
                 </div>
               </div>
@@ -412,7 +519,10 @@ export default function StudyScreen({ language, onExit }: Props) {
 
       {/* Rating buttons */}
       {flipped && (
-        <div className="slide-up" style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
+        <div
+          className="slide-up"
+          style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 28, flexWrap: "wrap" }}
+        >
           {RATING_CONFIG.map((r) => {
             const Icon = r.icon;
             return (
@@ -426,26 +536,29 @@ export default function StudyScreen({ language, onExit }: Props) {
                   alignItems: "center",
                   gap: 6,
                   padding: "14px 24px",
-                  borderRadius: 12,
+                  borderRadius: "var(--radius)",
                   background: r.bg,
                   color: r.color,
-                  fontSize: 14,
+                  fontFamily: "var(--sans)",
+                  fontSize: 13,
                   fontWeight: 600,
-                  border: `1.5px solid ${r.color}22`,
-                  minWidth: 90,
-                  transition: "all 0.2s",
+                  border: `1px solid ${r.color}22`,
+                  minWidth: 84,
+                  transition: "all 0.2s ease",
                   opacity: submitting ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "var(--shadow-md)";
+                  if (!submitting) {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "var(--shadow-md)";
+                  }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "none";
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                <Icon size={20} />
+                <Icon size={18} strokeWidth={1.5} />
                 {r.label}
               </button>
             );
@@ -459,8 +572,28 @@ export default function StudyScreen({ language, onExit }: Props) {
 function StatBox({ label, value }: { label: string; value: string | number }) {
   return (
     <div style={{ textAlign: "center" }}>
-      <div style={{ fontSize: 28, fontWeight: 700, color: "var(--primary-600)" }}>{value}</div>
-      <div style={{ fontSize: 12, color: "var(--neutral-400)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
+      <div
+        style={{
+          fontFamily: "var(--serif)",
+          fontSize: 28,
+          fontWeight: 500,
+          color: "var(--primary)",
+        }}
+      >
+        {value}
+      </div>
+      <div
+        style={{
+          fontFamily: "var(--sans)",
+          fontSize: 11,
+          color: "var(--muted-foreground)",
+          textTransform: "uppercase",
+          letterSpacing: "0.08em",
+          marginTop: 4,
+        }}
+      >
+        {label}
+      </div>
     </div>
   );
 }
